@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Drag Race Susun Kata — 2 Player</title>
+        <style>
+            :root {
+                --bg: #f6f4ee;
+                --card: #ffffff;
+                --accent: #ff8a00;
+                --success: #2e8b57;
+                --muted: #777;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
+                    Arial;
+                background: var(--bg);
+                color: #111;
+                padding: 20px;
+            }
+            h1 {
+                text-align: center;
+                margin: 8px 0 18px;
+                font-size: 26px;
+            }
+            .topbar {
+                display: flex;
+                gap: 12px;
+                justify-content: center;
+                align-items: center;
+                margin-bottom: 18px;
+                flex-wrap: wrap;
+            }
+            button {
+                cursor: pointer;
+                border: 0;
+                background: var(--accent);
+                color: #fff;
+                padding: 10px 14px;
+                border-radius: 10px;
+                font-weight: 600;
+            }
+            button.secondary {
+                background: #ddd;
+                color: #111;
+            }
+            .arena {
+                display: flex;
+                gap: 20px;
+                align-items: stretch;
+                justify-content: center;
+            }
+            .player {
+                width: 48%;
+                background: var(--card);
+                padding: 18px;
+                border-radius: 16px;
+                box-shadow: 0 6px 18px rgba(10, 10, 10, 0.08);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            .title {
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+            .target {
+                display: flex;
+                gap: 8px;
+                margin: 12px 0 6px;
+            }
+            .slot {
+                width: 54px;
+                height: 54px;
+                border-radius: 8px;
+                border: 2px dashed #ccc;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                font-weight: 700;
+                background: #fafafa;
+                user-select: none;
+            }
+            .letters {
+                margin-top: 12px;
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .tile {
+                width: 54px;
+                height: 54px;
+                border-radius: 10px;
+                background: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+                font-size: 20px;
+                font-weight: 700;
+                cursor: grab;
+                user-select: none;
+            }
+            .tile[draggable='false'] {
+                cursor: default;
+                opacity: 0.6;
+            }
+            .status {
+                text-align: center;
+                margin-top: 12px;
+                font-weight: 700;
+                font-size: 18px;
+                color: var(--muted);
+            }
+            .winner {
+                color: var(--success);
+                font-size: 22px;
+                margin-top: 8px;
+            }
+            .controls {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+                margin-top: 12px;
+                flex-wrap: wrap;
+            }
+            .footer {
+                max-width: 900px;
+                margin: 18px auto 0;
+                color: var(--muted);
+                font-size: 14px;
+                text-align: center;
+            }
+            @media (max-width: 800px) {
+                .arena {
+                    flex-direction: column;
+                }
+                .player {
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>🏁 Drag Race Susun Kata — 2 Player (Kiri vs Kanan)</h1>
+
+        <div class="topbar">
+            <button id="startBtn">Mulai Runde</button>
+            <button id="nextBtn" class="secondary">Soal Berikutnya</button>
+            <button id="resetBtn" class="secondary">Reset Skor</button>
+            <div style="display: flex; align-items: center; gap: 8px; color: var(--muted)">
+                <span>Ronde:</span><strong id="roundLabel">0</strong>
+                <span style="margin-left: 16px">Skor — Kiri:</span
+                ><strong id="scoreLeft">0</strong> <span style="margin-left: 8px">Kanan:</span
+                ><strong id="scoreRight">0</strong>
+            </div>
+        </div>
+
+        <div class="arena">
+            <!-- Player Kiri -->
+            <div class="player" id="playerLeft">
+                <div class="title">👈 Player Kiri</div>
+                <div class="status" id="statusLeft">Siap</div>
+
+                <div class="target" id="slotsLeft"></div>
+
+                <div class="letters" id="lettersLeft"></div>
+            </div>
+
+            <!-- Player Kanan -->
+            <div class="player" id="playerRight">
+                <div class="title">Player Kanan 👉</div>
+                <div class="status" id="statusRight">Siap</div>
+
+                <div class="target" id="slotsRight"></div>
+
+                <div class="letters" id="lettersRight"></div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 18px">
+            <div id="winnerBanner" class="winner"></div>
+        </div>
+
+        <div class="footer">
+            Petunjuk: Drag huruf ke kotak kosong untuk menyusun kata. Untuk touchscreen tanpa drag —
+            cukup klik tile huruf untuk memasukkannya ke slot kosong, dan klik slot untuk
+            mengembalikannya.
+        </div>
+
+        <script>
+            /* ------- DATA dan STATE ------- */
+            const WORDS = [
+                'bunga',
+                'sungai',
+                'rumah',
+                'meja',
+                'kursi',
+                'kucing',
+                'sekolah',
+                'matahari',
+                'pelangi',
+                'harimau',
+                'pisang',
+                'hujan',
+                'awan',
+                'daun',
+                'bulan',
+                'kita',
+                'guru',
+                'anak',
+            ]
+
+            let currentWord = ''
+            let round = 0
+            let scoreLeft = 0
+            let scoreRight = 0
+            let winnerDeclared = false
+
+            /* ------- HELPERS ------- */
+            function shuffleArray(a) {
+                a = a.slice()
+                for (let i = a.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1))
+                    ;[a[i], a[j]] = [a[j], a[i]]
+                }
+                return a
+            }
+
+            function scramble(word) {
+                const letters = word.split('')
+                let scr = shuffleArray(letters)
+                for (let i = 0; i < 6 && scr.join('') === word; i++) {
+                    scr = shuffleArray(letters)
+                }
+                return scr
+            }
+
+            /* ------- RENDER ------- */
+
+            function createWordLabel(side) {
+                const labelId = side === 'left' ? 'wordLabelLeft' : 'wordLabelRight'
+                let lbl = document.getElementById(labelId)
+                if (!lbl) {
+                    lbl = document.createElement('div')
+                    lbl.id = labelId
+                    lbl.style.fontSize = '24px'
+                    lbl.style.fontWeight = '700'
+                    lbl.style.marginBottom = '10px'
+                    lbl.style.letterSpacing = '4px'
+                    lbl.style.color = '#333'
+                    document
+                        .getElementById(side === 'left' ? 'playerLeft' : 'playerRight')
+                        .insertBefore(
+                            lbl,
+                            document.getElementById(side === 'left' ? 'slotsLeft' : 'slotsRight'),
+                        )
+                }
+                lbl.textContent = currentWord.toUpperCase()
+            }
+
+            function createSlots(container, length, side) {
+                container.innerHTML = ''
+                for (let i = 0; i < length; i++) {
+                    const slot = document.createElement('div')
+                    slot.className = 'slot'
+                    slot.dataset.index = i
+                    slot.dataset.side = side
+                    slot.addEventListener('dragover', e => e.preventDefault())
+                    slot.addEventListener('drop', handleDrop)
+                    slot.addEventListener('click', () => handleSlotClick(slot))
+                    container.appendChild(slot)
+                }
+            }
+
+            function createTiles(container, letters, side) {
+                container.innerHTML = ''
+                letters.forEach((ch, idx) => {
+                    const t = document.createElement('div')
+                    t.className = 'tile'
+                    t.draggable = true
+                    t.textContent = ch.toUpperCase()
+                    t.dataset.letter = ch.toUpperCase()
+                    t.dataset.side = side
+                    t.dataset.origIndex = idx
+                    t.addEventListener('dragstart', handleDragStart)
+                    t.addEventListener('click', () => handleTileClick(t))
+                    container.appendChild(t)
+                })
+            }
+
+            function setStatus(side, text) {
+                document.getElementById(
+                    side === 'left' ? 'statusLeft' : 'statusRight',
+                ).textContent = text
+            }
+
+            function updateScoreUi() {
+                document.getElementById('scoreLeft').textContent = scoreLeft
+                document.getElementById('scoreRight').textContent = scoreRight
+                document.getElementById('roundLabel').textContent = round
+            }
+
+            function showWinner(text) {
+                document.getElementById('winnerBanner').textContent = text
+                winnerDeclared = true
+            }
+
+            /* ------- DRAG & CLICK LOGIC ------- */
+            let dragData = null
+
+            function handleDragStart(e) {
+                dragData = {
+                    elem: e.target,
+                    side: e.target.dataset.side,
+                    letter: e.target.dataset.letter,
+                }
+                e.dataTransfer.setData('text/plain', JSON.stringify(dragData))
+            }
+
+            function handleDrop(e) {
+                e.preventDefault()
+                const slot = e.currentTarget
+                let data = dragData
+
+                try {
+                    if (!data) data = JSON.parse(e.dataTransfer.getData('text/plain'))
+                } catch {}
+
+                if (!data || data.side !== slot.dataset.side) return
+                if (slot.dataset.filled === 'true') return
+
+                placeLetterToSlot(data.elem, slot)
+            }
+
+            function placeLetterToSlot(tile, slot) {
+                slot.textContent = tile.dataset.letter
+                slot.dataset.filled = 'true'
+                slot.dataset.letter = tile.dataset.letter
+
+                tile.style.visibility = 'hidden'
+                tile.setAttribute('draggable', 'false')
+                tile.dataset.placed = 'true'
+
+                checkComplete(slot.dataset.side)
+            }
+
+            function handleTileClick(tile) {
+                if (tile.dataset.placed === 'true') return
+                const side = tile.dataset.side
+                const slots = Array.from(document.querySelectorAll(`.slot[data-side="${side}"]`))
+                const empty = slots.find(s => s.dataset.filled !== 'true')
+                if (empty) placeLetterToSlot(tile, empty)
+            }
+
+            function handleSlotClick(slot) {
+                if (slot.dataset.filled === 'true') {
+                    const side = slot.dataset.side
+                    const tile = Array.from(
+                        document.querySelectorAll(`.tile[data-side="${side}"]`),
+                    ).find(
+                        t =>
+                            t.dataset.letter === slot.dataset.letter && t.dataset.placed === 'true',
+                    )
+
+                    if (tile) {
+                        tile.style.visibility = 'visible'
+                        tile.dataset.placed = 'false'
+                        tile.setAttribute('draggable', 'true')
+                    }
+
+                    slot.textContent = ''
+                    delete slot.dataset.filled
+                    delete slot.dataset.letter
+                }
+            }
+
+            /* ------- CHECKING ------- */
+
+            function getCurrentAttempt(side) {
+                const slots = Array.from(document.querySelectorAll(`.slot[data-side="${side}"]`))
+                return slots.map(s => s.dataset.letter || '').join('')
+            }
+
+            function resetPlayer(side) {
+                const slots = document.getElementById(side === 'left' ? 'slotsLeft' : 'slotsRight')
+                const letters = document.getElementById(
+                    side === 'left' ? 'lettersLeft' : 'lettersRight',
+                )
+
+                createSlots(slots, currentWord.length, side)
+                createTiles(letters, scramble(currentWord), side)
+            }
+
+            function checkComplete(side) {
+                if (winnerDeclared) return
+
+                const attempt = getCurrentAttempt(side)
+
+                if (attempt.length !== currentWord.length) return
+
+                // BENAR → menang
+                if (attempt === currentWord.toUpperCase()) {
+                    showWinner(
+                        side === 'left' ? '🏆 Player Kiri MENANG!' : '🏆 Player Kanan MENANG!',
+                    )
+                    if (side === 'left') scoreLeft++
+                    else scoreRight++
+                    updateScoreUi()
+                    disableAllTiles()
+                    return
+                }
+
+                // ❌ SALAH → reset otomatis
+                setStatus(side, 'Salah! Mengulang...')
+                setTimeout(() => {
+                    setStatus(side, 'Coba lagi!')
+                    resetPlayer(side)
+                }, 600)
+            }
+
+            /* ------- UTILITY ------- */
+
+            function disableAllTiles() {
+                document.querySelectorAll('.tile').forEach(t => {
+                    t.setAttribute('draggable', 'false')
+                    t.style.cursor = 'default'
+                })
+            }
+
+            function enableAllTiles() {
+                document.querySelectorAll('.tile').forEach(t => {
+                    if (t.dataset.placed !== 'true') {
+                        t.setAttribute('draggable', 'true')
+                        t.style.visibility = 'visible'
+                        t.style.cursor = 'grab'
+                    } else {
+                        t.setAttribute('draggable', 'false')
+                        t.style.visibility = 'hidden'
+                    }
+                })
+            }
+
+            /* ------- GAME FLOW ------- */
+
+            function startRound() {
+                winnerDeclared = false
+                currentWord = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase()
+                round++
+                document.getElementById('winnerBanner').textContent = ''
+
+                createWordLabel('left')
+                createWordLabel('right')
+
+                createSlots(document.getElementById('slotsLeft'), currentWord.length, 'left')
+                createSlots(document.getElementById('slotsRight'), currentWord.length, 'right')
+
+                createTiles(document.getElementById('lettersLeft'), scramble(currentWord), 'left')
+                createTiles(document.getElementById('lettersRight'), scramble(currentWord), 'right')
+
+                setStatus('left', 'Susun kata!')
+                setStatus('right', 'Susun kata!')
+
+                updateScoreUi()
+                enableAllTiles()
+            }
+
+            /* ------- BUTTON EVENTS ------- */
+            document.getElementById('startBtn').addEventListener('click', startRound)
+            document.getElementById('nextBtn').addEventListener('click', startRound)
+
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                round = 0
+                scoreLeft = 0
+                scoreRight = 0
+                winnerDeclared = false
+
+                document.getElementById('winnerBanner').textContent = ''
+                document.getElementById('slotsLeft').innerHTML = ''
+                document.getElementById('slotsRight').innerHTML = ''
+                document.getElementById('lettersLeft').innerHTML = ''
+                document.getElementById('lettersRight').innerHTML = ''
+
+                setStatus('left', 'Siap')
+                setStatus('right', 'Siap')
+                updateScoreUi()
+            })
+
+            document.addEventListener('dragend', () => (dragData = null))
+            document.addEventListener('mouseup', () => (dragData = null))
+
+            updateScoreUi()
+        </script>
+    </body>
+</html>
