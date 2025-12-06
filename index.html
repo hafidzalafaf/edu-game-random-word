@@ -3,185 +3,48 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <title>Drag Race Susun Kata — 2 Player</title>
-        <style>
-            :root {
-                --bg: #f6f4ee;
-                --card: #ffffff;
-                --accent: #ff8a00;
-                --success: #2e8b57;
-                --muted: #777;
-            }
-            * {
-                box-sizing: border-box;
-            }
-            body {
-                margin: 0;
-                font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue',
-                    Arial;
-                background: var(--bg);
-                color: #111;
-                padding: 20px;
-            }
-            h1 {
-                text-align: center;
-                margin: 8px 0 18px;
-                font-size: 26px;
-            }
-            .topbar {
-                display: flex;
-                gap: 12px;
-                justify-content: center;
-                align-items: center;
-                margin-bottom: 18px;
-                flex-wrap: wrap;
-            }
-            button {
-                cursor: pointer;
-                border: 0;
-                background: var(--accent);
-                color: #fff;
-                padding: 10px 14px;
-                border-radius: 10px;
-                font-weight: 600;
-            }
-            button.secondary {
-                background: #ddd;
-                color: #111;
-            }
-            .arena {
-                display: flex;
-                gap: 20px;
-                align-items: stretch;
-                justify-content: center;
-            }
-            .player {
-                width: 48%;
-                background: var(--card);
-                padding: 18px;
-                border-radius: 16px;
-                box-shadow: 0 6px 18px rgba(10, 10, 10, 0.08);
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-            }
-            .title {
-                font-weight: 700;
-                margin-bottom: 6px;
-            }
-            .target {
-                display: flex;
-                gap: 8px;
-                margin: 12px 0 6px;
-            }
-            .slot {
-                width: 54px;
-                height: 54px;
-                border-radius: 8px;
-                border: 2px dashed #ccc;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-size: 20px;
-                font-weight: 700;
-                background: #fafafa;
-                user-select: none;
-            }
-            .letters {
-                margin-top: 12px;
-                display: flex;
-                gap: 8px;
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .tile {
-                width: 54px;
-                height: 54px;
-                border-radius: 10px;
-                background: #fff;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
-                font-size: 20px;
-                font-weight: 700;
-                cursor: grab;
-                user-select: none;
-            }
-            .tile[draggable='false'] {
-                cursor: default;
-                opacity: 0.6;
-            }
-            .status {
-                text-align: center;
-                margin-top: 12px;
-                font-weight: 700;
-                font-size: 18px;
-                color: var(--muted);
-            }
-            .winner {
-                color: var(--success);
-                font-size: 22px;
-                margin-top: 8px;
-            }
-            .controls {
-                display: flex;
-                gap: 10px;
-                justify-content: center;
-                margin-top: 12px;
-                flex-wrap: wrap;
-            }
-            .footer {
-                max-width: 900px;
-                margin: 18px auto 0;
-                color: var(--muted);
-                font-size: 14px;
-                text-align: center;
-            }
-            @media (max-width: 800px) {
-                .arena {
-                    flex-direction: column;
-                }
-                .player {
-                    width: 100%;
-                }
-            }
-        </style>
+        <title>Drag Race Susun Kata — 2 Tim</title>
+        <link rel="stylesheet" href="style.css" />
     </head>
     <body>
-        <h1>🏁 Drag Race Susun Kata — 2 Player (Kiri vs Kanan)</h1>
+        <h1>🏁 Ayo Susun Kata</h1>
 
         <div class="topbar">
-            <button id="startBtn">Mulai Runde</button>
-            <button id="nextBtn" class="secondary">Soal Berikutnya</button>
-            <button id="resetBtn" class="secondary">Reset Skor</button>
-            <div style="display: flex; align-items: center; gap: 8px; color: var(--muted)">
-                <span>Ronde:</span><strong id="roundLabel">0</strong>
-                <span style="margin-left: 16px">Skor — Kiri:</span
-                ><strong id="scoreLeft">0</strong> <span style="margin-left: 8px">Kanan:</span
-                ><strong id="scoreRight">0</strong>
+            <button id="startBtn">Mulai Game</button>
+        </div>
+
+        <div class="skor-wrap">
+            <div class="skor-card"><span>Skor</span><strong id="scoreLeft">0</strong></div>
+
+            <div class="round-wrap">
+                <span>Soal</span>
+                <strong id="roundLabel">0</strong>
             </div>
+
+            <div class="skor-card"><span>Skor</span><strong id="scoreRight">0</strong></div>
         </div>
 
         <div class="arena">
-            <!-- Player Kiri -->
+            <!-- Tim Upin -->
             <div class="player" id="playerLeft">
-                <div class="title">👈 Player Kiri</div>
+                <div class="title">👈 Tim Upin</div>
                 <div class="status" id="statusLeft">Siap</div>
 
                 <div class="target" id="slotsLeft"></div>
 
                 <div class="letters" id="lettersLeft"></div>
+                <button class="reset-btn" onclick="resetTim('left')">Reset Jawaban</button>
             </div>
 
-            <!-- Player Kanan -->
+            <!-- Tim Ipin -->
             <div class="player" id="playerRight">
-                <div class="title">Player Kanan 👉</div>
+                <div class="title">Tim Ipin 👉</div>
                 <div class="status" id="statusRight">Siap</div>
 
                 <div class="target" id="slotsRight"></div>
 
                 <div class="letters" id="lettersRight"></div>
+                <button class="reset-btn" onclick="resetTim('right')">Reset Jawaban</button>
             </div>
         </div>
 
@@ -189,11 +52,16 @@
             <div id="winnerBanner" class="winner"></div>
         </div>
 
-        <div class="footer">
-            Petunjuk: Drag huruf ke kotak kosong untuk menyusun kata. Untuk touchscreen tanpa drag —
-            cukup klik tile huruf untuk memasukkannya ke slot kosong, dan klik slot untuk
-            mengembalikannya.
+        <div id="finalModal" class="modal hidden">
+            <div class="modal-content">
+                <h2 id="finalTitle">🎉 Permainan Selesai!</h2>
+                <p id="finalWinner"></p>
+                <button id="closeModal">Main Lagi</button>
+            </div>
         </div>
+
+        <audio id="correctSound" src="./assets/answer-correct.mp3"></audio>
+        <audio id="winSound" src="./assets/win-sound.mp3"></audio>
 
         <script>
             /* ------- DATA dan STATE ------- */
@@ -216,6 +84,8 @@
                 'kita',
                 'guru',
                 'anak',
+                'laut',
+                'bintang',
             ]
 
             let currentWord = ''
@@ -223,6 +93,7 @@
             let scoreLeft = 0
             let scoreRight = 0
             let winnerDeclared = false
+            let questionPool = []
 
             /* ------- HELPERS ------- */
             function shuffleArray(a) {
@@ -389,7 +260,7 @@
                 return slots.map(s => s.dataset.letter || '').join('')
             }
 
-            function resetPlayer(side) {
+            function resetTim(side) {
                 const slots = document.getElementById(side === 'left' ? 'slotsLeft' : 'slotsRight')
                 const letters = document.getElementById(
                     side === 'left' ? 'lettersLeft' : 'lettersRight',
@@ -408,13 +279,18 @@
 
                 // BENAR → menang
                 if (attempt === currentWord.toUpperCase()) {
-                    showWinner(
-                        side === 'left' ? '🏆 Player Kiri MENANG!' : '🏆 Player Kanan MENANG!',
-                    )
-                    if (side === 'left') scoreLeft++
-                    else scoreRight++
+                    playCorrectSound()
+                    showWinner(side === 'left' ? '🏆 Tim Upin MENANG!' : '🏆 Tim Ipin MENANG!')
+                    if (side === 'left') scoreLeft += 5
+                    else scoreRight += 5
                     updateScoreUi()
                     disableAllTiles()
+
+                    // ⏭️ otomatis lanjut ke soal berikutnya
+                    setTimeout(() => {
+                        startRound()
+                    }, 1000)
+
                     return
                 }
 
@@ -422,7 +298,7 @@
                 setStatus(side, 'Salah! Mengulang...')
                 setTimeout(() => {
                     setStatus(side, 'Coba lagi!')
-                    resetPlayer(side)
+                    resetTim(side)
                 }, 600)
             }
 
@@ -452,8 +328,14 @@
 
             function startRound() {
                 winnerDeclared = false
-                currentWord = WORDS[Math.floor(Math.random() * WORDS.length)].toUpperCase()
                 round++
+
+                if (round > questionPool.length) {
+                    showFinalModal()
+                    return
+                }
+                currentWord = questionPool[round - 1]
+
                 document.getElementById('winnerBanner').textContent = ''
 
                 createWordLabel('left')
@@ -473,30 +355,79 @@
             }
 
             /* ------- BUTTON EVENTS ------- */
-            document.getElementById('startBtn').addEventListener('click', startRound)
-            document.getElementById('nextBtn').addEventListener('click', startRound)
+            document.getElementById('startBtn').addEventListener('click', () => {
+                prepareQuestions()
+                round = 0
+                startRound()
+            })
 
-            document.getElementById('resetBtn').addEventListener('click', () => {
+            // document.getElementById('nextBtn').addEventListener('click', startRound)
+
+            // document.getElementById('resetBtn').addEventListener('click', () => {
+            //     round = 0
+            //     scoreLeft = 0
+            //     scoreRight = 0
+            //     winnerDeclared = false
+
+            //     document.getElementById('winnerBanner').textContent = ''
+            //     document.getElementById('slotsLeft').innerHTML = ''
+            //     document.getElementById('slotsRight').innerHTML = ''
+            //     document.getElementById('lettersLeft').innerHTML = ''
+            //     document.getElementById('lettersRight').innerHTML = ''
+
+            //     setStatus('left', 'Siap')
+            //     setStatus('right', 'Siap')
+            //     updateScoreUi()
+            // })
+            document.getElementById('closeModal').addEventListener('click', () => {
+                console.log('TEST')
+
+                document.getElementById('finalModal').classList.add('hidden')
+
                 round = 0
                 scoreLeft = 0
                 scoreRight = 0
-                winnerDeclared = false
-
-                document.getElementById('winnerBanner').textContent = ''
-                document.getElementById('slotsLeft').innerHTML = ''
-                document.getElementById('slotsRight').innerHTML = ''
-                document.getElementById('lettersLeft').innerHTML = ''
-                document.getElementById('lettersRight').innerHTML = ''
-
-                setStatus('left', 'Siap')
-                setStatus('right', 'Siap')
                 updateScoreUi()
+                prepareQuestions()
+                startRound()
             })
 
             document.addEventListener('dragend', () => (dragData = null))
             document.addEventListener('mouseup', () => (dragData = null))
 
             updateScoreUi()
+
+            function playCorrectSound() {
+                const audio = document.getElementById('correctSound')
+                audio.currentTime = 0
+                audio.play()
+            }
+
+            function prepareQuestions() {
+                const shuffled = shuffleArray(WORDS)
+                questionPool = shuffled.slice(0, 20).map(w => w.toUpperCase())
+            }
+
+            function playWinSound() {
+                const audio = document.getElementById('winSound')
+                audio.currentTime = 0
+                audio.play()
+            }
+
+            function showFinalModal() {
+                // Tentukan siapa pemenang
+                let winnerText = ''
+                if (scoreLeft > scoreRight) winnerText = '🏆 Pemenang: Tim Upin!'
+                else if (scoreRight > scoreLeft) winnerText = '🏆 Pemenang: Tim Ipin!'
+                else winnerText = '🤝 Seri! Kedua pemain sama kuat!'
+
+                document.getElementById('finalWinner').textContent = winnerText
+
+                // Tampilkan modal
+                document.getElementById('finalModal').classList.remove('hidden')
+
+                playWinSound()
+            }
         </script>
     </body>
 </html>
