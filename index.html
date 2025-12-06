@@ -9,7 +9,7 @@
     <body>
         <h1>🏁 Ayo Susun Kata</h1>
 
-        <div class="topbar">
+        <div class="topbar hidden">
             <button id="startBtn">Mulai Game</button>
         </div>
 
@@ -27,7 +27,8 @@
         <div class="arena">
             <!-- Tim Upin -->
             <div class="player" id="playerLeft">
-                <div class="title">👈 Tim Upin</div>
+                <img class="img-profile" src="./assets/Upin.webp" alt="" />
+                <div class="title">Tim Upin</div>
                 <div class="status" id="statusLeft">Siap</div>
 
                 <div class="target" id="slotsLeft"></div>
@@ -38,7 +39,8 @@
 
             <!-- Tim Ipin -->
             <div class="player" id="playerRight">
-                <div class="title">Tim Ipin 👉</div>
+                <img class="img-profile" src="./assets/Ipin.webp" alt="" />
+                <div class="title">Tim Ipin</div>
                 <div class="status" id="statusRight">Siap</div>
 
                 <div class="target" id="slotsRight"></div>
@@ -57,6 +59,20 @@
                 <h2 id="finalTitle">🎉 Permainan Selesai!</h2>
                 <p id="finalWinner"></p>
                 <button id="closeModal">Main Lagi</button>
+            </div>
+        </div>
+
+        <div id="onboarding" class="onboard show">
+            <div class="onboard-content">
+                <h1>Selamat Datang di Kelas Interaktif Bu Nindhi!</h1>
+                <p>
+                    Hari ini kita akan bermain game menyusun kata. Siapa yang tercepat, dialah
+                    juaranya 🎉
+                </p>
+
+                <img src="./assets/kelas-1.jpeg" class="onboard-photo" alt="Foto Kelas" />
+
+                <button id="startOnboard">Mulai Game</button>
             </div>
         </div>
 
@@ -280,7 +296,7 @@
                 // BENAR → menang
                 if (attempt === currentWord.toUpperCase()) {
                     playCorrectSound()
-                    showWinner(side === 'left' ? '🏆 Tim Upin MENANG!' : '🏆 Tim Ipin MENANG!')
+                    showWinner(side === 'left' ? '🏆 Tim Upin Betul!' : '🏆 Tim Ipin Betul!')
                     if (side === 'left') scoreLeft += 5
                     else scoreRight += 5
                     updateScoreUi()
@@ -428,6 +444,19 @@
 
                 playWinSound()
             }
+
+            // Tutup onboarding dan mulai game
+            document.getElementById('startOnboard').addEventListener('click', () => {
+                document.getElementById('onboarding').classList.remove('show')
+
+                // mulai game
+                round = 0
+                scoreLeft = 0
+                scoreRight = 0
+                updateScoreUi()
+                prepareQuestions()
+                startRound()
+            })
         </script>
     </body>
 </html>
