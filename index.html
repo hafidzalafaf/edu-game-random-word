@@ -14,20 +14,19 @@
         </div>
 
         <div class="skor-wrap">
-            <div class="skor-card"><span>Skor</span><strong id="scoreLeft">0</strong></div>
-
             <div class="round-wrap">
                 <span>Soal</span>
                 <strong id="roundLabel">0</strong>
             </div>
-
-            <div class="skor-card"><span>Skor</span><strong id="scoreRight">0</strong></div>
         </div>
 
         <div class="arena">
             <!-- Tim Upin -->
             <div class="player" id="playerLeft">
-                <img class="img-profile" src="./assets/Upin.webp" alt="" />
+                <div class="skor-card right-card">
+                    <span>Skor</span><strong id="scoreLeft">0</strong>
+                </div>
+                <img class="img-profile" src="./assets/upin.webp" alt="" />
                 <div class="title">Tim Upin</div>
                 <div class="status" id="statusLeft">Siap</div>
 
@@ -39,7 +38,10 @@
 
             <!-- Tim Ipin -->
             <div class="player" id="playerRight">
-                <img class="img-profile" src="./assets/Ipin.webp" alt="" />
+                <div class="skor-card left-card">
+                    <span>Skor</span><strong id="scoreRight">0</strong>
+                </div>
+                <img class="img-profile" src="./assets/ipin.webp" alt="" />
                 <div class="title">Tim Ipin</div>
                 <div class="status" id="statusRight">Siap</div>
 
@@ -300,8 +302,8 @@
                 if (attempt === currentWord.toUpperCase()) {
                     playCorrectSound()
                     showWinner(side === 'left' ? '🏆 Tim Upin Betul!' : '🏆 Tim Ipin Betul!')
-                    if (side === 'left') scoreLeft += 5
-                    else scoreRight += 5
+                    if (side === 'left') scoreLeft += 10
+                    else scoreRight += 10
                     updateScoreUi()
                     disableAllTiles()
 

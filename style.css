@@ -57,6 +57,7 @@ button.secondary {
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 .title {
     font-weight: 700;
@@ -156,6 +157,17 @@ button.secondary {
     border: 1px solid #ccc;
     background: #fff;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.06);
+    position: absolute;
+}
+
+.skor-card.left-card {
+    top: 24px;
+    left: 24px;
+}
+
+.skor-card.right-card {
+    top: 24px;
+    right: 24px;
 }
 
 .skor-card strong {
