@@ -33,7 +33,7 @@
                 <div class="target" id="slotsLeft"></div>
 
                 <div class="letters" id="lettersLeft"></div>
-                <button class="reset-btn" onclick="resetTim('left')">Reset Jawaban</button>
+                <button class="reset-btn" onpointerdown="resetTim('left')">Reset Jawaban</button>
             </div>
 
             <!-- Tim Ipin -->
@@ -48,7 +48,7 @@
                 <div class="target" id="slotsRight"></div>
 
                 <div class="letters" id="lettersRight"></div>
-                <button class="reset-btn" onclick="resetTim('right')">Reset Jawaban</button>
+                <button class="reset-btn" onpointerdown="resetTim('right')">Reset Jawaban</button>
             </div>
         </div>
 
@@ -167,7 +167,7 @@
                     slot.dataset.side = side
                     slot.addEventListener('dragover', e => e.preventDefault())
                     // slot.addEventListener('drop', handleDrop)
-                    slot.addEventListener('click', () => handleSlotClick(slot))
+                    slot.addEventListener('pointerdown', () => handleSlotClick(slot))
                     container.appendChild(slot)
                 }
             }
@@ -183,7 +183,7 @@
                     t.dataset.side = side
                     t.dataset.origIndex = idx
                     // t.addEventListener('dragstart', handleDragStart)
-                    t.addEventListener('click', () => handleTileClick(t))
+                    t.addEventListener('pointerdown', () => handleTileClick(t))
                     container.appendChild(t)
                 })
             }
@@ -376,16 +376,16 @@
             }
 
             /* ------- BUTTON EVENTS ------- */
-            document.getElementById('startBtn').addEventListener('click', () => {
+            document.getElementById('startBtn').addEventListener('pointerdown', () => {
                 goFullscreen()
                 prepareQuestions()
                 round = 0
                 startRound()
             })
 
-            // document.getElementById('nextBtn').addEventListener('click', startRound)
+            // document.getElementById('nextBtn').addEventListener('pointerdown', startRound)
 
-            // document.getElementById('resetBtn').addEventListener('click', () => {
+            // document.getElementById('resetBtn').addEventListener('pointerdown', () => {
             //     round = 0
             //     scoreLeft = 0
             //     scoreRight = 0
@@ -401,7 +401,7 @@
             //     setStatus('right', 'Siap')
             //     updateScoreUi()
             // })
-            document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('closeModal').addEventListener('pointerdown', () => {
                 console.log('TEST')
 
                 document.getElementById('finalModal').classList.add('hidden')
@@ -452,7 +452,7 @@
             }
 
             // Tutup onboarding dan mulai game
-            document.getElementById('startOnboard').addEventListener('click', () => {
+            document.getElementById('startOnboard').addEventListener('pointerdown', () => {
                 goFullscreen()
                 document.getElementById('onboarding').classList.remove('show')
 
