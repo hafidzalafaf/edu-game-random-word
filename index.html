@@ -166,7 +166,7 @@
                     slot.dataset.index = i
                     slot.dataset.side = side
                     slot.addEventListener('dragover', e => e.preventDefault())
-                    slot.addEventListener('drop', handleDrop)
+                    // slot.addEventListener('drop', handleDrop)
                     slot.addEventListener('click', () => handleSlotClick(slot))
                     container.appendChild(slot)
                 }
@@ -177,12 +177,12 @@
                 letters.forEach((ch, idx) => {
                     const t = document.createElement('div')
                     t.className = 'tile'
-                    t.draggable = true
+                    t.draggable = false
                     t.textContent = ch.toUpperCase()
                     t.dataset.letter = ch.toUpperCase()
                     t.dataset.side = side
                     t.dataset.origIndex = idx
-                    t.addEventListener('dragstart', handleDragStart)
+                    // t.addEventListener('dragstart', handleDragStart)
                     t.addEventListener('click', () => handleTileClick(t))
                     container.appendChild(t)
                 })
@@ -377,6 +377,7 @@
 
             /* ------- BUTTON EVENTS ------- */
             document.getElementById('startBtn').addEventListener('click', () => {
+                goFullscreen()
                 prepareQuestions()
                 round = 0
                 startRound()
@@ -452,6 +453,7 @@
 
             // Tutup onboarding dan mulai game
             document.getElementById('startOnboard').addEventListener('click', () => {
+                goFullscreen()
                 document.getElementById('onboarding').classList.remove('show')
 
                 // mulai game
@@ -462,6 +464,18 @@
                 prepareQuestions()
                 startRound()
             })
+
+            function goFullscreen() {
+                const element = document.documentElement // seluruh halaman
+
+                if (element.requestFullscreen) {
+                    element.requestFullscreen()
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen() // Safari/Android lama
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen() // IE/TV lama
+                }
+            }
         </script>
     </body>
 </html>
